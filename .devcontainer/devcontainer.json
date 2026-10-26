@@ -1,0 +1,13 @@
+{
+  "name": "Scramjet Proxy Codespace",
+  "image": "://microsoft.com",
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Scramjet Front-end Server",
+      "onAutoForward": "notify",
+      "visibility": "public"
+    }
+  },
+  "postCreateCommand": "npm install"
+}
