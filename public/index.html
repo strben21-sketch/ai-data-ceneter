@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scramjet Codespaces Proxy</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #121212; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { text-align: center; max-width: 500px; width: 100%; padding: 20px; }
+        input { width: 100%; padding: 12px; margin-top: 15px; border-radius: 6px; border: 1px solid #333; background: #222; color: #fff; font-size: 16px; box-sizing: border-box; }
+        button { margin-top: 10px; width: 100%; padding: 12px; background: #0070f3; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0051a8; }
+        #status { color: #888; font-size: 14px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scramjet Proxy 🚀</h1>
+        <p>Running inside GitHub Codespaces</p>
+        <form id="proxy-form">
+            <input type="text" id="url-input" placeholder="Enter a URL (e.g., https://google.com)" required>
+            <button type="submit">Launch Proxy</button>
+        </form>
+        <p id="status">Registering Scramjet Worker...</p>
+    </div>
+
+    <!-- Load the main bundle exported via Scramjet distribution path -->
+    <script src="/scram/scramjet.all.js"></script>
+    <script>
+        const statusText = document.getElementById('status');
+        
+        async function initProxy() {
+            try {
+                // Register the intercept worker script natively built into your server route
+                await navigator.serviceWorker.register('/scram/scramjet.sw.js', {
+                    scope: '/scram/'
+                });
+                statusText.innerText = "⚡ Scramjet Worker active and ready.";
+                statusText.style.color = "#00ff88";
+            } catch (err) {
+                statusText.innerText = "❌ Worker failed to register: " + err.message;
+                statusText.style.color = "#ff3333";
+            }
+        }
+
+        document.getElementById('proxy-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            let targetUrl = document.getElementById('url-input').value.trim();
+            
+            if (!/^https?:\/\//i.test(targetUrl)) {
+                targetUrl = 'https://' + targetUrl;
+            }
+            
+            // Rewrite the target URL syntax natively into the Scramjet engine wrapper format
+            const proxiedUrl = window.__scramjet.rewriteUrl(targetUrl);
+            window.location.href = proxiedUrl;
+        });
+
+        initProxy();
+    </script>
+</body>
+</html>
